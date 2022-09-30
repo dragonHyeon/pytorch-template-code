@@ -1,0 +1,48 @@
+import os
+
+from torch.utils.data import Dataset
+from torchvision import transforms
+from PIL import Image
+
+from Common import ConstVar
+from Lib import UtilLib
+
+
+class SIGNSDataset(Dataset):
+    def __init__(self, data_dir, mode_train_test):
+        """
+        * SIGNSDataset 데이터로더
+        :param data_dir: 데이터 디렉터리
+        :param mode_train_test: 학습 / 테스트 모드
+        """
+
+        # 데이터 해당 디렉터리
+        self.data_dir = data_dir
+        # 학습 / 테스트 모드
+        self.mode_train_test = mode_train_test
+
+        # 파일 경로 모음
+        self.files = [UtilLib.getNewPath(path=data_dir,
+                                         add=filename)
+                      for filename in os.listdir(self.data_dir)]
+        # 레이블 모음
+        # 파일명 예시: '0_IMG_5864.jpg'
+        self.labels = [int(filename[0]) for filename in os.listdir(self.data_dir)]
+
+        # 모드에 따른 데이터 전처리 방법
+        self.transform = {
+            ConstVar.MODE_TRAIN: transforms.Compose([
+                transforms.Resize(size=ConstVar.RESIZE_SIZE),
+                transforms.ToTensor()
+            ]),
+            ConstVar.MODE_TEST: transforms.Compose([
+                transforms.Resize(size=ConstVar.RESIZE_SIZE),
+                transforms.ToTensor()
+            ])
+        }
+
+    def __len__(self):
+        return len(self.files)
+
+    def __getitem__(self, item):
+        return self.transform[self.mode_train_test](Image.open(fp=self.files[item])), self.labels[item]

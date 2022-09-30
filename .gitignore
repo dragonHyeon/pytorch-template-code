@@ -1,0 +1,7 @@
+.idea/
+__pycache__/
+DATA/*
+RES/*
+LOG/*
+!*/.gitkeep
+Main/freeplace.py
