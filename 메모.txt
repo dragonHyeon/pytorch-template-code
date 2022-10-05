@@ -62,3 +62,10 @@ Q. gpu로 셋팅 다해서 학습 돌리다가 중간에 모델 cpu로 바꾸면
 해보니 일단 그냥 device 2개라고 실행 자체가 안됨.
 
 결론적으로 device 는 미리 설정해놓기
+
+
+<numpy, detach>
+1. TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+tensor -> numpy 로 바꾸려면 먼저 cuda 에 있는걸 cpu 로 옮겨야 함
+2. RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+grad_fn 있는 tensor 의 경우에는 detach 해줘야 함. grad_fn 없는 tensor는 detach 없이 바로 진행

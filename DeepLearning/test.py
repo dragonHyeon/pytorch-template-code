@@ -1,9 +1,14 @@
+import numpy as np
+
+from Common import ConstVar
+from DeepLearning import utils
+
+
 class Tester:
-    def __init__(self, model, loss_fn, metric_fn, test_dataloader, device):
+    def __init__(self, model, metric_fn, test_dataloader, device):
         """
         * 테스트 관련 클래스
         :param model: 테스트 할 모델
-        :param loss_fn: 손실 함수
         :param metric_fn: 학습 성능 체크하기 위한 metric
         :param test_dataloader: 테스트용 데이터로더
         :param device: GPU / CPU
@@ -11,8 +16,6 @@ class Tester:
 
         # 테스트 할 모델
         self.model = model
-        # 손실 함수
-        self.loss_fn = loss_fn
         # 학습 성능 체크하기 위한 metric
         self.metric_fn = metric_fn
         # 테스트용 데이터로더
@@ -20,11 +23,15 @@ class Tester:
         # GPU / CPU
         self.device = device
 
-    def running(self):
+    def running(self, checkpoint_file=None):
         """
-        *
-        :return:
+        * 테스트 셋팅 및 진행
+        :return: 테스트 수행됨
         """
+
+        if checkpoint_file:
+            state = utils.load_checkpoint(filepath=checkpoint_file)
+            self.model.load_state_dict(state[ConstVar.KEY_STATE_MODEL])
 
         # 테스트 진행
         self._test()
@@ -35,4 +42,23 @@ class Tester:
         :return:
         """
 
-        pass
+        # 모델을 테스트 모드로 전환
+        self.model.eval()
+
+        # 배치 마다의 정확도 담을 리스트
+        batch_accuracy_list = list()
+
+        for x, y in self.test_dataloader:
+
+            # 각 텐서를 해당 디바이스로 이동
+            x = x.to(self.device)
+            y = y.to(self.device)
+
+            # 순전파
+            y_pred = self.model(x)
+
+            # 배치 마다의 정확도 계산
+            batch_accuracy_list.append(self.metric_fn(y_pred=y_pred,
+                                                      y=y))
+
+        self.score = np.mean(batch_accuracy_list)
