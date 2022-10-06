@@ -27,11 +27,12 @@ class Trainer:
         # GPU / CPU
         self.device = device
 
-    def running(self, num_epoch, save_dir, Tester, test_dataloader, metric_fn, checkpoint_file=None):
+    def running(self, num_epoch, save_dir, save_frequency, Tester, test_dataloader, metric_fn, checkpoint_file=None):
         """
         * 학습 셋팅 및 진행
         :param num_epoch: 학습 반복 횟수
         :param save_dir: 체크포인트 파일 저장할 디렉터리 위치
+        :param save_frequency: 체크포인트 파일 저장 빈도수
         :param Tester: 학습 성능 체크하기 위한 테스트 관련 클래스
         :param test_dataloader: 학습 성능 체크하기 위한 테스트용 데이터로더
         :param metric_fn: 학습 성능 체크하기 위한 metric
@@ -50,24 +51,25 @@ class Trainer:
             start_epoch_num = state[ConstVar.KEY_STATE_EPOCH] + 1
 
         # num epoch 만큼 학습 반복
-        for current_epoch_num, _ in enumerate(range(num_epoch), start=start_epoch_num):
+        for current_epoch_num, count in enumerate(range(num_epoch), start=start_epoch_num):
 
             # 학습 진행
             self._train()
 
-            # 학습 진행 저장
-            filepath = UtilLib.getNewPath(path=save_dir,
-                                          add=ConstVar.CHECKPOINT_FILE_NAME.format(current_epoch_num))
-            DragonLib.make_parent_dir_if_not_exits(target_path=filepath)
-            utils.save_checkpoint(filepath=filepath,
-                                  model=self.model,
-                                  optimizer=self.optimizer,
-                                  epoch=current_epoch_num,
-                                  is_best=self._check_is_best(tester=Tester(model=deepcopy(x=self.model),
-                                                                            metric_fn=metric_fn,
-                                                                            test_dataloader=test_dataloader,
-                                                                            device=self.device),
-                                                              best_checkpoint_dir=save_dir))
+            # 체크포인트 저장 주기마다 학습 진행 저장
+            if (count + 1) % save_frequency == 0:
+                filepath = UtilLib.getNewPath(path=save_dir,
+                                              add=ConstVar.CHECKPOINT_FILE_NAME.format(current_epoch_num))
+                DragonLib.make_parent_dir_if_not_exits(target_path=filepath)
+                utils.save_checkpoint(filepath=filepath,
+                                      model=self.model,
+                                      optimizer=self.optimizer,
+                                      epoch=current_epoch_num,
+                                      is_best=self._check_is_best(tester=Tester(model=deepcopy(x=self.model),
+                                                                                metric_fn=metric_fn,
+                                                                                test_dataloader=test_dataloader,
+                                                                                device=self.device),
+                                                                  best_checkpoint_dir=save_dir))
 
     def _train(self):
         """
@@ -119,7 +121,7 @@ class Trainer:
                 self.best_score = tester.score
             # 없다면 0 으로 초기화
             else:
-                self.best_score = 0
+                self.best_score = ConstVar.INITIAL_BEST_ACCURACY_ZERO
 
         # best 성능 갱신
         if current_score > self.best_score:

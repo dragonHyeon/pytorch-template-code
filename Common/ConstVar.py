@@ -17,16 +17,22 @@ DEVICE_CUDA = 'cuda'
 DEVICE_CPU = 'cpu'
 
 # 하이퍼 파라미터
-RESIZE_SIZE = 32
 LEARNING_RATE = 0.001
 BATCH_SIZE = 4
-SHUFFLE = True
 NUM_EPOCH = 2
+
+# 옵션 값
+SHUFFLE = True
+SAVE_FREQUENCY = 1
+
+# 그 외 기본 설정 값
+RESIZE_SIZE = 32
 
 # state 저장시 딕셔너리 키 값
 KEY_STATE_MODEL = 'model'
 KEY_STATE_OPTIMIZER = 'optimizer'
 KEY_STATE_EPOCH = 'epoch'
 
-#
+# 초기 값
 INITIAL_START_EPOCH_NUM = 1
+INITIAL_BEST_ACCURACY_ZERO = 0
