@@ -44,11 +44,18 @@ def arguments():
 
     # parser 인자 목록 생성
     # 학습 데이터 디렉터리 설정
-    parser.add_argument("--data_dir",
+    parser.add_argument("--train_data_dir",
                         type=str,
                         help='set training data directory',
                         default=ConstVar.DATA_DIR_TRAIN,
-                        dest="data_dir")
+                        dest="train_data_dir")
+
+    # 테스트 데이터 디렉터리 설정
+    parser.add_argument("--test_data_dir",
+                        type=str,
+                        help='set test data directory',
+                        default=ConstVar.DATA_DIR_TEST,
+                        dest="test_data_dir")
 
     # 체크포인트 파일 저장할 디렉터리 위치
     parser.add_argument("--save_dir",
@@ -136,13 +143,13 @@ def run_program(args):
                                     lr=args.learning_rate)
 
     # 학습용 데이터로더 선언
-    train_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.data_dir,
+    train_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.train_data_dir,
                                                        mode_train_test=ConstVar.MODE_TRAIN),
                                   batch_size=args.batch_size,
                                   shuffle=args.shuffle)
 
     # 테스트용 데이터로더 선언
-    test_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.data_dir,
+    test_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.test_data_dir,
                                                       mode_train_test=ConstVar.MODE_TEST),
                                  shuffle=args.shuffle)
 

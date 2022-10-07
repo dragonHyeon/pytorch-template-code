@@ -1,3 +1,5 @@
+import torch
+import visdom
 from copy import deepcopy
 
 from Common import ConstVar
@@ -27,7 +29,7 @@ class Trainer:
         # GPU / CPU
         self.device = device
 
-    def running(self, num_epoch, save_dir, save_frequency, Tester, test_dataloader, metric_fn, checkpoint_file=None):
+    def running(self, num_epoch, save_dir, save_frequency, Tester, test_dataloader, metric_fn, checkpoint_file=None, visualize=True):
         """
         * 학습 셋팅 및 진행
         :param num_epoch: 학습 반복 횟수
@@ -37,6 +39,7 @@ class Trainer:
         :param test_dataloader: 학습 성능 체크하기 위한 테스트용 데이터로더
         :param metric_fn: 학습 성능 체크하기 위한 metric
         :param checkpoint_file: 불러올 체크포인트 파일
+        :param visualize: 시각화 여부
         :return: 학습 완료 및 체크포인트 파일 생성됨
         """
 
@@ -70,6 +73,16 @@ class Trainer:
                                                                                 test_dataloader=test_dataloader,
                                                                                 device=self.device),
                                                                   best_checkpoint_dir=save_dir))
+
+            # 시각화 여부에 따라 시각화 진행
+            if visualize:
+                tester = Tester(model=deepcopy(x=self.model),
+                                metric_fn=metric_fn,
+                                test_dataloader=test_dataloader,
+                                device=self.device)
+                tester.running()
+                self._draw_graph(score=tester.score,
+                                 current_epoch_num=current_epoch_num)
 
     def _train(self):
         """
@@ -129,3 +142,23 @@ class Trainer:
             return True
         else:
             return False
+
+    def _draw_graph(self, score, current_epoch_num):
+        """
+        * 학습 진행 상태 실시간으로 시각화
+        :return: visdom 으로 시각화 진행
+        """
+
+        # 서버 켜기
+        try:
+            self.vis
+        except AttributeError:
+            self.vis = visdom.Visdom()
+        # 실시간으로 학습 진행 상태 그리기
+        try:
+            self.vis.line(Y=torch.Tensor([score]),
+                          X=torch.Tensor([current_epoch_num]),
+                          win=self.plt,
+                          update='append')
+        except AttributeError:
+            self.plt = self.vis.line(Y=torch.Tensor([score]))
