@@ -1,10 +1,11 @@
-import os, datetime
+import os
 
 # 파일 경로
 PROJECT_ROOT_DIRECTORY = os.path.dirname(os.getcwd())
 DATA_DIR_TRAIN = '{0}/RES/SIGNS dataset/train_signs/'.format(PROJECT_ROOT_DIRECTORY)
 DATA_DIR_TEST = '{0}/RES/SIGNS dataset/test_signs/'.format(PROJECT_ROOT_DIRECTORY)
-OUTPUT_DIR_CHECKPOINT = '{0}/DATA/checkpoint/'.format(PROJECT_ROOT_DIRECTORY)
+OUTPUT_DIR = '{0}/DATA/'.format(PROJECT_ROOT_DIRECTORY)
+OUTPUT_DIR_SUFFIX_CHECKPOINT = 'checkpoint'
 CHECKPOINT_FILE_NAME = 'epoch{:05d}.ckpt'
 CHECKPOINT_BEST_FILE_NAME = 'best_model.ckpt'
 
@@ -23,7 +24,7 @@ NUM_EPOCH = 2
 
 # 옵션 값
 SHUFFLE = True
-SAVE_FREQUENCY = 1
+TRACKING_FREQUENCY = 1
 
 # 그 외 기본 설정 값
 RESIZE_SIZE = 32

@@ -57,19 +57,19 @@ def arguments():
                         default=ConstVar.DATA_DIR_TEST,
                         dest="test_data_dir")
 
-    # 체크포인트 파일 저장할 디렉터리 위치
-    parser.add_argument("--save_dir",
+    # 결과물 파일 저장할 디렉터리 위치
+    parser.add_argument("--output_dir",
                         type=str,
-                        help='set the directory where checkpoint files will be saved',
-                        default=ConstVar.OUTPUT_DIR_CHECKPOINT,
-                        dest='save_dir')
+                        help='set the directory where output files will be saved',
+                        default=ConstVar.OUTPUT_DIR,
+                        dest='output_dir')
 
-    # 체크포인트 파일 저장 빈도수
-    parser.add_argument("--save_frequency",
+    # 체크포인트 파일 저장 및 학습 진행 기록 빈도수
+    parser.add_argument("--tracking_frequency",
                         type=int,
-                        help='set checkpoint file save frequency',
-                        default=ConstVar.SAVE_FREQUENCY,
-                        dest='save_frequency')
+                        help='set model training tracking frequency',
+                        default=ConstVar.TRACKING_FREQUENCY,
+                        dest='tracking_frequency')
 
     # 불러올 체크포인트 파일 경로
     parser.add_argument("--checkpoint_file",
@@ -162,8 +162,8 @@ def run_program(args):
 
     # 모델 학습
     trainer.running(num_epoch=args.num_epoch,
-                    save_dir=args.save_dir,
-                    save_frequency=args.save_frequency,
+                    output_dir=args.output_dir,
+                    tracking_frequency=args.tracking_frequency,
                     Tester=Tester,
                     test_dataloader=test_dataloader,
                     metric_fn=accuracy,
