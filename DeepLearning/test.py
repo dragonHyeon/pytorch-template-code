@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 from Common import ConstVar
 from DeepLearning import utils
@@ -48,7 +49,7 @@ class Tester:
         # 배치 마다의 정확도 담을 리스트
         batch_accuracy_list = list()
 
-        for x, y in self.test_dataloader:
+        for x, y in tqdm(self.test_dataloader, desc='test dataloader', leave=False):
 
             # 각 텐서를 해당 디바이스로 이동
             x = x.to(self.device)

@@ -1,6 +1,7 @@
 import torch
 import visdom
 from copy import deepcopy
+from tqdm import tqdm
 
 from Common import ConstVar
 from Lib import UtilLib, DragonLib
@@ -53,7 +54,7 @@ class Trainer:
             start_epoch_num = state[ConstVar.KEY_STATE_EPOCH] + 1
 
         # num epoch 만큼 학습 반복
-        for current_epoch_num, count in enumerate(range(num_epoch), start=start_epoch_num):
+        for current_epoch_num, count in enumerate(tqdm(range(num_epoch), desc='training process'), start=start_epoch_num):
 
             # 학습 진행
             self._train()
@@ -97,7 +98,7 @@ class Trainer:
 
         # x shape: (N, 3, 32, 32)
         # y shape: (N)
-        for x, y in self.train_dataloader:
+        for x, y in tqdm(self.train_dataloader, desc='train dataloader', leave=False):
 
             # 각 텐서를 해당 디바이스로 이동
             x = x.to(self.device)
