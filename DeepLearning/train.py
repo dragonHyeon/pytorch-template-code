@@ -85,7 +85,8 @@ class Trainer:
                                 device=self.device)
                 tester.running()
                 self._draw_graph(score=tester.score,
-                                 current_epoch_num=current_epoch_num)
+                                 current_epoch_num=current_epoch_num,
+                                 title=metric_fn.__name__)
 
     def _train(self):
         """
@@ -146,9 +147,12 @@ class Trainer:
         else:
             return False
 
-    def _draw_graph(self, score, current_epoch_num):
+    def _draw_graph(self, score, current_epoch_num, title):
         """
         * 학습 진행 상태 실시간으로 시각화
+        :param score: 성능 평가 점수
+        :param current_epoch_num: 현재 에폭 수
+        :param title: 그래프 제목
         :return: visdom 으로 시각화 진행
         """
 
@@ -162,6 +166,9 @@ class Trainer:
             self.vis.line(Y=torch.Tensor([score]),
                           X=torch.Tensor([current_epoch_num]),
                           win=self.plt,
-                          update='append')
+                          update='append',
+                          opts=dict(title=title))
         except AttributeError:
-            self.plt = self.vis.line(Y=torch.Tensor([score]))
+            self.plt = self.vis.line(Y=torch.Tensor([score]),
+                                     X=torch.Tensor([current_epoch_num]),
+                                     opts=dict(title=title))

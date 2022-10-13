@@ -1,8 +1,8 @@
 import os
 
-from torch.utils.data import Dataset
-from torchvision import transforms
 from PIL import Image
+from torchvision import transforms
+from torch.utils.data import Dataset
 
 from Common import ConstVar
 from Lib import UtilLib

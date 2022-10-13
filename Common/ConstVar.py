@@ -20,7 +20,7 @@ DEVICE_CPU = 'cpu'
 # 하이퍼 파라미터
 LEARNING_RATE = 0.001
 BATCH_SIZE = 4
-NUM_EPOCH = 2
+NUM_EPOCH = 20
 
 # 옵션 값
 SHUFFLE = True
