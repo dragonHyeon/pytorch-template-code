@@ -1,14 +1,6 @@
 import torch.nn as nn
 
 
-class AlexNet(nn.Module):
-    def __init__(self):
-        super(AlexNet, self).__init__()
-
-    def forward(self, x):
-        pass
-
-
 class LeNet(nn.Module):
     def __init__(self):
         """
@@ -27,11 +19,11 @@ class LeNet(nn.Module):
         self.fc1 = nn.Linear(in_features=120, out_features=84)
         self.fc2 = nn.Linear(in_features=84, out_features=6)
 
-    def forward(self,x):
+    def forward(self, x):
         """
         * 순전파
-        :param x: 배치 개수 만큼의 입력
-        :return: 배치 개수 만큼의 출력
+        :param x: 배치 개수 만큼의 입력. (N, 3, 32, 32)
+        :return: 배치 개수 만큼의 출력. (N, 6)
         """
 
         # (N, 3, 32, 32) -> (N, 6, 28, 28)
