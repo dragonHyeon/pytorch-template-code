@@ -150,8 +150,7 @@ def run_program(args):
 
     # 테스트용 데이터로더 선언
     test_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.test_data_dir,
-                                                      mode_train_test=ConstVar.MODE_TEST),
-                                 shuffle=args.shuffle)
+                                                      mode_train_test=ConstVar.MODE_TEST))
 
     # 모델 학습 객체 선언
     trainer = Trainer(model=model,

@@ -57,13 +57,6 @@ def arguments():
                         default=None,
                         dest='checkpoint_file')
 
-    # dataloader 에서 데이터 불러오기 시 shuffle 여부
-    parser.add_argument("--shuffle",
-                        type=bool,
-                        help='set whether to shuffle or not while loading dataloader',
-                        default=ConstVar.SHUFFLE,
-                        dest='shuffle')
-
     # parsing 한거 가져오기
     args = parser.parse_args()
 
@@ -96,8 +89,7 @@ def run_program(args):
 
     # 테스트용 데이터로더 선언
     test_dataloader = DataLoader(dataset=SIGNSDataset(data_dir=args.test_data_dir,
-                                                      mode_train_test=ConstVar.MODE_TEST),
-                                 shuffle=args.shuffle)
+                                                      mode_train_test=ConstVar.MODE_TEST))
 
     # 모델 테스트 객체 선언
     tester = Tester(model=model,
