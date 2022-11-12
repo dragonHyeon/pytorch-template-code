@@ -3,8 +3,8 @@ import visdom
 from copy import deepcopy
 from tqdm import tqdm
 
+from Lib import UtilLib
 from Common import ConstVar
-from Lib import UtilLib, DragonLib
 from DeepLearning import utils
 
 
@@ -62,28 +62,26 @@ class Trainer:
             # 학습 진행 기록 주기마다 학습 진행 저장 및 시각화
             if (count + 1) % tracking_frequency == 0:
 
-                # 체크포인트 저장
-                checkpoint_dir = UtilLib.getNewPath(path=output_dir,
-                                                    add=ConstVar.OUTPUT_DIR_SUFFIX_CHECKPOINT)
-                filepath = UtilLib.getNewPath(path=checkpoint_dir,
-                                              add=ConstVar.CHECKPOINT_FILE_NAME.format(current_epoch_num))
-                DragonLib.make_parent_dir_if_not_exits(target_path=filepath)
-                utils.save_checkpoint(filepath=filepath,
-                                      model=self.model,
-                                      optimizer=self.optimizer,
-                                      epoch=current_epoch_num,
-                                      is_best=self._check_is_best(tester=Tester(model=deepcopy(x=self.model),
-                                                                                metric_fn=metric_fn,
-                                                                                test_dataloader=test_dataloader,
-                                                                                device=self.device),
-                                                                  best_checkpoint_dir=checkpoint_dir))
-
-                # 시각화 진행
+                # 현재 모델을 테스트하기 위한 테스트 객체 생성
                 tester = Tester(model=deepcopy(x=self.model),
                                 metric_fn=metric_fn,
                                 test_dataloader=test_dataloader,
                                 device=self.device)
                 tester.running()
+
+                # 체크포인트 저장
+                checkpoint_dir = UtilLib.getNewPath(path=output_dir,
+                                                    add=ConstVar.OUTPUT_DIR_SUFFIX_CHECKPOINT)
+                checkpoint_filepath = UtilLib.getNewPath(path=checkpoint_dir,
+                                                         add=ConstVar.CHECKPOINT_FILE_NAME.format(current_epoch_num))
+                utils.save_checkpoint(filepath=checkpoint_filepath,
+                                      model=self.model,
+                                      optimizer=self.optimizer,
+                                      epoch=current_epoch_num,
+                                      is_best=self._check_is_best(tester=tester,
+                                                                  best_checkpoint_dir=checkpoint_dir))
+
+                # 그래프 시각화 진행
                 self._draw_graph(score=tester.score,
                                  current_epoch_num=current_epoch_num,
                                  title=metric_fn.__name__)
@@ -122,10 +120,6 @@ class Trainer:
         :return: True / False
         """
 
-        # 현재 모델로 테스트 진행
-        tester.running()
-        current_score = tester.score
-
         # best 성능 측정을 위해 초기화
         try:
             self.best_score
@@ -134,15 +128,16 @@ class Trainer:
                                                  add=ConstVar.CHECKPOINT_BEST_FILE_NAME)
             # 기존에 측정한 best 체크포인트가 있으면 해당 score 로 초기화
             if UtilLib.isExist(checkpoint_file):
-                tester.running(checkpoint_file=checkpoint_file)
-                self.best_score = tester.score
+                best_tester = deepcopy(x=tester)
+                best_tester.running(checkpoint_file=checkpoint_file)
+                self.best_score = best_tester.score
             # 없다면 0 으로 초기화
             else:
                 self.best_score = ConstVar.INITIAL_BEST_ACCURACY_ZERO
 
         # best 성능 갱신
-        if current_score > self.best_score:
-            self.best_score = current_score
+        if tester.score < self.best_score:
+            self.best_score = tester.score
             return True
         else:
             return False

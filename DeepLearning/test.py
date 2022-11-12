@@ -27,9 +27,11 @@ class Tester:
     def running(self, checkpoint_file=None):
         """
         * 테스트 셋팅 및 진행
+        :param checkpoint_file: 불러올 체크포인트 파일
         :return: 테스트 수행됨
         """
 
+        # 불러올 체크포인트 파일 있을 경우 불러오기
         if checkpoint_file:
             state = utils.load_checkpoint(filepath=checkpoint_file)
             self.model.load_state_dict(state[ConstVar.KEY_STATE_MODEL])
@@ -40,7 +42,7 @@ class Tester:
     def _test(self):
         """
         * 테스트 진행
-        :return:
+        :return: score 기록
         """
 
         # 모델을 테스트 모드로 전환
@@ -62,4 +64,5 @@ class Tester:
             batch_accuracy_list.append(self.metric_fn(y_pred=y_pred,
                                                       y=y))
 
+        # score 기록
         self.score = np.mean(batch_accuracy_list)

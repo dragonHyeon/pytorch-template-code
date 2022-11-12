@@ -1,7 +1,8 @@
 import torch
+import matplotlib.pyplot as plt
 
+from Lib import UtilLib, DragonLib
 from Common import ConstVar
-from Lib import UtilLib
 
 
 def load_checkpoint(filepath):
@@ -29,6 +30,9 @@ def save_checkpoint(filepath, model, optimizer=None, epoch=None, is_best=False):
     :return: 체크포인트 파일 생성됨
     """
 
+    # 저장하고자 하는 경로의 상위 디렉터리가 존재하지 않는 경우 상위 경로 생성
+    DragonLib.make_parent_dir_if_not_exits(target_path=filepath)
+
     # state 정보 담기
     state = {
         ConstVar.KEY_STATE_MODEL: model.state_dict(),
@@ -45,3 +49,31 @@ def save_checkpoint(filepath, model, optimizer=None, epoch=None, is_best=False):
         torch.save(obj=state,
                    f=UtilLib.getNewPath(path=UtilLib.getParentDirPath(filePath=filepath),
                                         add=ConstVar.CHECKPOINT_BEST_FILE_NAME))
+
+
+def save_pics(pics_list, filepath, title):
+    """
+    * 학습 결과물 이미지로 저장
+    :param pics_list: 원본, 재구성 이미지 쌍 담은 리스트
+    :param filepath: 저장될 그림 파일 경로
+    :param title: 그림 제목
+    :return: 그림 파일 생성됨
+    """
+
+    # plt 로 시각화 할 수 있는 형식으로 변환
+    plt_pics_list = [(original_x.cpu().reshape(-1, 32, 32).permute(1, 2, 0), reconstructed_x.cpu().detach().reshape(-1, 32, 32).permute(1, 2, 0)) for original_x, reconstructed_x in pics_list]
+
+    # plt 에 그리기
+    fig, axs = plt.subplots(nrows=10, ncols=2, figsize=(5, 15))
+    fig.suptitle(t=title, fontsize=18)
+    for num, (original_x, reconstructed_x) in enumerate(plt_pics_list):
+        axs[num, 0].imshow(X=original_x, cmap='gray')
+        axs[num, 0].axis('off')
+        axs[num, 1].imshow(X=reconstructed_x, cmap='gray')
+        axs[num, 1].axis('off')
+
+    # 저장하고자 하는 경로의 상위 디렉터리가 존재하지 않는 경우 상위 경로 생성
+    DragonLib.make_parent_dir_if_not_exits(target_path=filepath)
+
+    # 그림 저장
+    plt.savefig(filepath)

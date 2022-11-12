@@ -6,7 +6,9 @@ DATA_DIR_TRAIN = '{0}/RES/SIGNS dataset/train_signs/'.format(PROJECT_ROOT_DIRECT
 DATA_DIR_TEST = '{0}/RES/SIGNS dataset/test_signs/'.format(PROJECT_ROOT_DIRECTORY)
 OUTPUT_DIR = '{0}/DATA/'.format(PROJECT_ROOT_DIRECTORY)
 OUTPUT_DIR_SUFFIX_CHECKPOINT = 'checkpoint'
+OUTPUT_DIR_SUFFIX_PICS = 'pics'
 CHECKPOINT_FILE_NAME = 'epoch{:05d}.ckpt'
+PICS_FILE_NAME = 'epoch{:05d}.png'
 CHECKPOINT_BEST_FILE_NAME = 'best_model.ckpt'
 
 # 학습 / 테스트 모드
@@ -25,6 +27,7 @@ NUM_EPOCH = 20
 # 옵션 값
 SHUFFLE = True
 TRACKING_FREQUENCY = 1
+NUM_PICS_LIST = 10
 
 # 그 외 기본 설정 값
 RESIZE_SIZE = 32

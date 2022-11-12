@@ -4,8 +4,8 @@ from PIL import Image
 from torchvision import transforms
 from torch.utils.data import Dataset
 
-from Common import ConstVar
 from Lib import UtilLib
+from Common import ConstVar
 
 
 class SIGNSDataset(Dataset):
