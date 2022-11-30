@@ -69,3 +69,6 @@ Q. gpu로 셋팅 다해서 학습 돌리다가 중간에 모델 cpu로 바꾸면
 tensor -> numpy 로 바꾸려면 먼저 cuda 에 있는걸 cpu 로 옮겨야 함
 2. RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
 grad_fn 있는 tensor 의 경우에는 detach 해줘야 함. grad_fn 없는 tensor는 detach 없이 바로 진행
+
+<tolist()>
+np.argmax(a=y_pred.tolist(), axis=1) 에서 y_pred 를 굳이 .cpu().detach().numpy() 할 것 없이 바로 list 로 바꿔주어도 됨
