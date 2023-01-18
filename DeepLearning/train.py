@@ -136,7 +136,7 @@ class Trainer:
                 self.best_score = ConstVar.INITIAL_BEST_ACCURACY_ZERO
 
         # best 성능 갱신
-        if tester.score < self.best_score:
+        if tester.score > self.best_score:
             self.best_score = tester.score
             return True
         else:
