@@ -72,3 +72,11 @@ grad_fn 있는 tensor 의 경우에는 detach 해줘야 함. grad_fn 없는 tens
 
 <tolist()>
 np.argmax(a=y_pred.tolist(), axis=1) 에서 y_pred 를 굳이 .cpu().detach().numpy() 할 것 없이 바로 list 로 바꿔주어도 됨
+
+<deepcopy>
+모델 deepcopy 하면 서로 다른 주소를 갖는 모델 됨
+https://stackoverflow.com/questions/65298796/pytorch-no-training-effect-after-deepcopy
+
+모델 만드는게 결국 nn.Module 만드는것.
+nn.Module 은 항상 클래스 선언하고 그 다음에 함수처럼 사용
+nn.Module 안에 또 nn.Module 있을 수 있음
